@@ -13,6 +13,7 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <linux/pm_runtime.h>
+#include <linux/reboot.h>
 
 #if IS_ENABLED(CONFIG_MTK_FLASHLIGHT)
 #include "flashlight-core.h"
@@ -748,7 +749,7 @@ static int aw36515_2led_lol_close(struct v4l2_subdev *sd, struct v4l2_subdev_fh 
 
 	int rval;
 	rval = regmap_update_bits(flash->regmap,
-                    REG_ENABLE, 0x02, 0x00);
+                    REG_ENABLE, 0x0f, 0x00);
 
 	pm_runtime_put(sd->dev);
 
@@ -1026,6 +1027,23 @@ err_node_put:
 	return -EINVAL;
 }
 
+static int flash_notify_sys(struct notifier_block *this, unsigned long code, void* unused)
+{
+	if (code == SYS_DOWN || code == SYS_HALT || code == SYS_POWER_OFF) {
+			aw36515_2led_lol_enable_ctrl(aw36515_2led_lol_flash_data, AW36515_2LED_LOL_LED0, false);
+			pr_info("[%s] system is power off or power down and flash led is need to be closed\n",
+				__func__);
+		} else {
+			pr_info("[%s] lol_i2c_client is NULL, skip disabling flash\n",
+				__func__);
+		}
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block flash_notifier = {
+	.notifier_call = flash_notify_sys,
+};
+
 static int aw36515_2led_lol_probe(struct i2c_client *client,
 			const struct i2c_device_id *devid)
 {
@@ -1102,6 +1120,12 @@ static int aw36515_2led_lol_probe(struct i2c_client *client,
 	rval = aw36515_2led_lol_subdev_init(flash, AW36515_2LED_LOL_LED1, "aw36515_2led_lol-led1");
 	if (rval < 0)
 		return rval;
+
+	rval = register_reboot_notifier(&flash_notifier);
+	if (rval < 0) {
+		pr_err("[%s] cannot register reboot notifier\n", __func__);
+		return rval;
+	}
 
 	pm_runtime_enable(flash->dev);
 

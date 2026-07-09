@@ -64,16 +64,17 @@
 		exception_upload_support;
 		tp_data_record_support;
 		palm_to_sleep_support;
-		diaphragm_touch_support;
-		report_rate_white_list_support;
+		//diaphragm_touch_support;
+		//report_rate_white_list_support;
 		esd_handle_support;
 		health_monitor_support;
 		disable_touch_event_support;
 		temperature_detect_shellback_support;
-		aiunit_game_info_support;
+		//aiunit_game_info_support;
 		fingerprint_not_report_in_suspend;
 		glove_mode_v2_support;
 		waterproof_support;
+		report_rate_v2_support;
 		/*
 		 *Virtual Key Config:
 		 *1:touchpanel,button-type: <virtualkey_type  supportted_button-map>
@@ -89,12 +90,12 @@
 		 */
 		touchpanel,button-type = <4>;
 		touchpanel.button-TRx = <0 0>;
-
+		/*
 		FT3683G{
 			switch_report_rate;
 			extreme_game_report_rate = <240>;//240Hz
 		};
-
+		*/
 
 
 		FT3683G_PANEL8{

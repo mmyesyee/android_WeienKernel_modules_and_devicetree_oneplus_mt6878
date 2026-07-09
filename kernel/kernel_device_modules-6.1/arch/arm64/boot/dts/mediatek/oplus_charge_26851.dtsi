@@ -46,8 +46,8 @@
 
 /* charge start */
 &regulator_vibrator{
-	min-volt = <2900000>;
-	max-volt = <2900000>;
+	min-volt = <3000000>;
+	max-volt = <3000000>;
 };
 
 &mtk_gauge {
@@ -66,7 +66,7 @@
 	RBAT_PULL_UP_VOLT = <(1840)>;
 	USE_MORE_PRECISE_NTC_TABLE = <(1)>;
 	car-tune-value = <(100)>;
-	keep-100-percent = <(1)>;
+	keep-100-percent = <(2)>;
 	SHUTDOWN_1_TIME = <(5)>;
 	low-tmp-bat-voltage-low-bound1 = <(3350)>;
 	com-fg-meter-resistance = <(40)>;
@@ -86,7 +86,7 @@
 
 &mt6375_typec {
 	pd-data {
-		pd,source-pdo-data = <0x000190c8>; /* 5V, 2000 mA */
+		pd,source-pdo-data = <0x260190B4>; /* 5V, 1800 mA */
 		pd,charging-policy = <0>;
 	};
 };
@@ -644,7 +644,7 @@
 		oplus_spec,usbtemp_cool_down_recover_ntc_high = <60>;
 		oplus_spec,usbtemp_cool_down_recover_gap_low = <6>;
 		oplus_spec,usbtemp_cool_down_recover_gap_high = <15>;
-		oplus_spec,usbtemp_otg_cc_boot_current_limit = <2000000>;
+		oplus_spec,usbtemp_otg_cc_boot_current_limit = <1800000>;
 
 		oplus_virtual_buck: oplus,virtual_buck {
 			compatible = "oplus,virtual_buck";
@@ -859,7 +859,7 @@
 
 	oplus_cpa: oplus,cpa {
 		compatible = "oplus,cpa";
-		oplus,protocol_list = <CHG_PROTOCOL_UFCS 44
+		oplus,protocol_list = <CHG_PROTOCOL_UFCS 80
 					CHG_PROTOCOL_VOOC 80
 					CHG_PROTOCOL_PPS 55
 					CHG_PROTOCOL_PD 15
@@ -867,7 +867,9 @@
 		oplus,default_protocol_list = <CHG_PROTOCOL_UFCS
 					CHG_PROTOCOL_VOOC
 					CHG_PROTOCOL_PPS
-					CHG_PROTOCOL_PD>;
+					CHG_PROTOCOL_PD
+					CHG_PROTOCOL_QC>;
+		oplus,bc12_check_timeout_ms = <1000>;
 	};
 
 	oplus_virtual_cp: oplus,virtual_cp {
@@ -876,11 +878,17 @@
 		oplus,ic_type = <OPLUS_CHG_IC_VIRTUAL_CP>;
 		oplus,ic_index = <0>;
 		oplus,cp_ic = <&oplus_sc8547_cp &oplus_sc8547_slave_cp>;
-		oplus,input_curr_max_ma = <5000 5000>;
+		oplus,input_curr_max_ma = <4000 4000>;
 		oplus,cp_ic_connect = <OPLUS_CHG_IC_CONNECT_PARALLEL>;
 		oplus,main_cp = <0>;
 
 		oplus,reg_proc_node;
+
+		oplus,cp_strategy = <CP_STRAT_OPEN_BY_CURR>;
+		oplus,cp_strategy_data {
+			oplus,cp_open_curr_thr_ma = <0 1900>;
+			oplus,cp_close_curr_thr_ma = <0 1600>;
+		};
 	};
 
 oplus_virtual_ufcs: oplus,virtual_ufcs {
@@ -898,27 +906,27 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 		oplus,impedance_unit = <&oplus_ufcs_impedance_unit>;
 
 		oplus,target_vbus_mv = <11000>;
-		oplus,curr_max_ma = <4000>;
+		oplus,curr_max_ma = <7300>;
 		oplus,curr_table_type = <UFCS_CURR_CP_TABLE>;
 		oplus,ufcs_warm_allow_vol = <4000>;
 		oplus,ufcs_warm_allow_soc = <55>;
-		oplus,ufcs_strategy_normal_current = <4000>;
-		oplus,ufcs_over_high_or_low_current = <4000>;
+		oplus,ufcs_strategy_normal_current = <7300>;
+		oplus,ufcs_over_high_or_low_current = <7300>;
 		oplus,curr_max_ma_percent = <4000 /* 75% ibus */
 					     2000 /* 85% ibus */>;
 		oplus,ufcs_timeout_third = <17562>;
 		oplus,ufcs_timeout_oplus = <17562>;
 		oplus,ufcs_ibat_over_third = <9400>;
 		oplus,ufcs_ibat_over_oplus = <16000>;
-		oplus,ufcs_full_cool_sw_vbat = <4490>;
-		oplus,ufcs_full_normal_sw_vbat = <4490>;
-		oplus,ufcs_full_normal_hw_vbat = <4500>;
+		oplus,ufcs_full_cool_sw_vbat = <4500>;
+		oplus,ufcs_full_normal_sw_vbat = <4550>;
+		oplus,ufcs_full_normal_hw_vbat = <4560>;
 		oplus,ufcs_full_warm_vbat = <4130>;
 		oplus,ufcs_full_cool_sw_vbat_third = <4490>;
 		oplus,ufcs_full_normal_sw_vbat_third= <4490>;
-		oplus,ufcs_full_normal_hw_vbat_third = <4500>;
+		oplus,ufcs_full_normal_hw_vbat_third = <4540>;
 		oplus,ufcs_strategy_batt_high_temp = <410 420 430 400 410 420>;
-		oplus,ufcs_strategy_high_current = <3000 3000 2000 3000 3000 3000>;
+		oplus,ufcs_strategy_high_current = <5000 4000 4000 5000 5000 5000>;
 		oplus,ufcs_charge_strategy_soc = <0 20 35 55 75 85 90>;
 		oplus,ufcs_charge_strategy_temp = <0 50 120 160 350 440 500>;
 		oplus,ufcs_little_cool_high_temp = <210>;
@@ -932,39 +940,39 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 
 		ufcs_oplus_lcf_strategy {
 			oplus,temp_type = <OPLUS_STRATEGY_USE_SHELL_TEMP>;
-			oplus,temp_range = <0 50 120 160 210 350 440>;
+			oplus,temp_range = <0 50 120 160 210 380 440>;
 
 			strategy_temp_range_curves {
-				strategy_temp_range_t0 = <600 4150 0
-								 550 4530 0
-								 500 4520 0
-								 450 4510 0
-								 400 4500 1>;
-				strategy_temp_range_t1 = <800 4540 0
-								 750 4530 0
-								 700 4520 0
-								 650 4510 0
-								 600 4500 1>;
-				strategy_temp_range_t2 = <950 4540 0
-								 850 4535 0
-								 750 4520 0
-								 650 4510 0
-								 550 4500 1>;
-				strategy_temp_range_t3 = <950 4540 0
-								 850 4535 0
-								 750 4520 0
-								 650 4510 0
-								 550 4500 1>;
-				strategy_temp_range_t4 = <1550 4540 0
-								 1450 4535 0
-								 1350 4520 0
-								 1250 4510 0
-								 1150 4500 1>;
-				strategy_temp_range_t5 = <1800 4540 0
-								 1700 4535 0
-								 1600 4520 0
-								 1500 4510 0
-								 1400 4500 1>;
+				strategy_temp_range_t0 =       <396 4500 0
+								371 4490 0
+								346 4480 0
+								321 4470 0
+								296 4460 1>;
+				strategy_temp_range_t1 =       <396 4500 0
+								361 4495 0
+								326 4480 0
+								291 4470 0
+								256 4460 1>;
+				strategy_temp_range_t2 =       <925 4550 0
+								880 4545 0
+								835 4530 0
+								790 4520 0
+								745 4510 1>;
+				strategy_temp_range_t3 =       <1420 4550 0
+								1370 4545 0
+								1270 4530 0
+								1170 4520 0
+								1020 4510 1>;
+				strategy_temp_range_t4 =       <1420 4550 0
+								1370 4545 0
+								1270 4530 0
+								1170 4520 0
+								1020 4510 1>;
+				strategy_temp_range_t5 =       <2185 4536 0
+								1985 4528 0
+								1685 4513 0
+								1385 4490 0
+								1000 4467 1>;
 			};
 		};
 
@@ -973,381 +981,479 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 			oplus,temp_range = <0 50 120 160 210 380 440>;
 
 			strategy_temp_range_curves {
-				strategy_temp_range_t0 = <415 4570 0
-								 340 4560 0
-								 365 4550 0
-								 340 4540 0
-								 315 4530 1>;
-				strategy_temp_range_t1 = <525 4570 0
-								 500 4565 0
-								 475 4550 0
-								 425 4540 0
-								 375 4530 1>;
-				strategy_temp_range_t2 = <625 4570 0
-								 600 4565 0
-								 560 4550 0
-								 515 4540 0
-								 470 4530 1>;
-				strategy_temp_range_t3 = <950 4551 0
-								 850 4543 0
-								 750 4505 0
-								 650 4505 0
-								 500 4475 1>;
-				strategy_temp_range_t4 = <950 4551 0
-								 850 4543 0
-								 750 4505 0
-								 650 4505 0
-								 500 4475 1>;
-				strategy_temp_range_t5 = <1350 4550 0
-								 1250 4545 0
-								 1000 4500 0
-								 1600 4540 0
-								 1450 4530 1>;
+				strategy_temp_range_t0 =       <396 4500 0
+								371 4490 0
+								346 4480 0
+								321 4470 0
+								296 4460 1>;
+				strategy_temp_range_t1 =       <396 4500 0
+								361 4495 0
+								326 4480 0
+								291 4470 0
+								256 4460 1>;
+				strategy_temp_range_t2 =       <925 4550 0
+								880 4545 0
+								835 4530 0
+								790 4520 0
+								745 4510 1>;
+				strategy_temp_range_t3 =       <1420 4550 0
+								1370 4545 0
+								1270 4530 0
+								1170 4520 0
+								1020 4510 1>;
+				strategy_temp_range_t4 =       <1420 4550 0
+								1370 4545 0
+								1270 4530 0
+								1170 4520 0
+								1020 4510 1>;
+				strategy_temp_range_t5 =       <2185 4536 0
+								1985 4528 0
+								1685 4513 0
+								1385 4490 0
+								1000 4467 1>;
 			};
 		};
 
 		ufcs_charge_third_strategy {
 			oplus,temp_type = <OPLUS_STRATEGY_USE_SHELL_TEMP>;
 			oplus,soc_range = <0 20 35 55 75 85 90>;
-			oplus,temp_range = <0 50 120 160 210 350 440 530>;
+			oplus,temp_range = <0 50 120 160 210 350 440 510>;
 
 			strategy_soc_range_min { /* ui_soc: 0%~20% */
-				strategy_temp_little_cold =	<11000 4150 2200 0 0
+				strategy_temp_little_cold =    <11000 4140 1750 0 0
+								11000 4140 1500 0 0
+								11000 4150 1000 1 0>;
+				strategy_temp_cool =           <11000 4150 2950 0 0
+								11000 4150 2500 0 0
 								11000 4150 2000 0 0
-								11000 4480 1550 0 0
+								11000 4480 1750 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4150 3900 0 0
-								11000 4150 3500 0 0
-								11000 4150 3000 0 0
-								11000 4480 2900 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1550 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 4000 0 0
-								11000 4480 3500 0 0
-								11000 4480 3250 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_little_cool =    <11000 4150 4000 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
+								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4480 4000 0 0
-								11000 4480 3600 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_little_cool_high = <11000 4230 4000 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
+								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_low =	<11000 4480 4000 0 0
-								11000 4480 3600 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_normal_low =	<11000 4230 4000 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
+								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 4000 0 0
-								11000 4460 3600 0 0
-								11000 4460 3500 0 0
-								11000 4460 3000 0 0
-								11000 4460 2500 0 0
+				strategy_temp_normal_high =	<11000 4230 4000 0 0
+								11000 4450 3750 0 0
+								11000 4450 3500 0 0
+								11000 4450 3000 0 0
+								11000 4450 2500 0 0
+								11000 4460 2150 0 0
 								11000 4460 2000 0 0
 								11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4120 2000 0 0
+				strategy_temp_warm =           <11000 4120 1950 0 0
 								11000 4120 1500 0 0
 								11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_low { /* ui_soc: 21%~35% */
-				strategy_temp_little_cold =	<11000 4150 2200 0 0
+				strategy_temp_little_cold =    <11000 4140 1750 0 0
+								11000 4140 1500 0 0
+								11000 4150 1000 1 0>;
+				strategy_temp_cool =           <11000 4150 2950 0 0
+								11000 4150 2500 0 0
 								11000 4150 2000 0 0
-								11000 4480 1550 0 0
+								11000 4480 1750 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4150 3900 0 0
-								11000 4150 3500 0 0
-								11000 4150 3000 0 0
-								11000 4480 2900 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1550 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 4000 0 0
-								11000 4480 3500 0 0
-								11000 4480 3250 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_little_cool =    <11000 4150 4000 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
+								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4480 4000 0 0
-								11000 4480 3600 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_little_cool_high = <11000 4230 4000 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
+								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_low =	<11000 4480 4000 0 0
-								11000 4480 3600 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_normal_low =     <11000 4230 4000 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
+								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 4000 0 0
-								11000 4460 3600 0 0
-								11000 4460 3500 0 0
-								11000 4460 3000 0 0
-								11000 4460 2500 0 0
+				strategy_temp_normal_high =    <11000 4230 4000 0 0
+								11000 4450 3750 0 0
+								11000 4450 3500 0 0
+								11000 4450 3000 0 0
+								11000 4450 2500 0 0
+								11000 4460 2150 0 0
 								11000 4460 2000 0 0
 								11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4120 2000 0 0
+				strategy_temp_warm =           <11000 4120 1950 0 0
 								11000 4120 1500 0 0
 								11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_mid_low { /* ui_soc: 36%~55% */
-				strategy_temp_little_cold =	<11000 4150 2000 0 0
-								11000 4480 1550 0 0
+				strategy_temp_little_cold =	<11000 4140 1750 0 0
+								11000 4140 1500 0 0
+								11000 4150 1000 1 0>;
+				strategy_temp_cool =           <11000 4150 2500 0 0
+								11000 4150 2000 0 0
+								11000 4480 1750 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1550 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_little_cool =    <11000 4470 3000 0 0
+								11000 4470 2500 0 0
+								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_low =	<11000 4480 4000 0 0
-								11000 4480 3600 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_little_cool_high = <11000 4470 3000 0 0
+								11000 4470 2500 0 0
+								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 4000 0 0
-								11000 4460 3600 0 0
-								11000 4460 3500 0 0
-								11000 4460 3000 0 0
-								11000 4460 2500 0 0
+				strategy_temp_normal_low =     <11000 4230 4000 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
+								11000 4480 2150 0 0
+								11000 4480 2000 0 0
+								11000 4480 1500 0 0
+								11000 4490 1000 1 0>;
+				strategy_temp_normal_high =    <11000 4230 4000 0 0
+								11000 4450 3750 0 0
+								11000 4450 3500 0 0
+								11000 4450 3000 0 0
+								11000 4450 2500 0 0
+								11000 4460 2150 0 0
 								11000 4460 2000 0 0
 								11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4120 2000 0 0
+				strategy_temp_warm =           <11000 4120 1950 0 0
 								11000 4120 1500 0 0
 								11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_mid { /* ui_soc: 56%~75% */
-				strategy_temp_little_cold =	<11000 4480 1500 0 0
+				strategy_temp_little_cold =    <11000 4140 1500 0 0
+								11000 4150 1000 1 0>;
+				strategy_temp_cool =           <11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 2000 0 0
+				strategy_temp_little_cool =    <11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
 				strategy_temp_little_cool_high = <11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4480 2000 0 0
+				strategy_temp_normal_low =     <11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 2500 0 0
+				strategy_temp_normal_high =    <11000 4450 2500 0 0
+								11000 4460 2150 0 0
 								11000 4460 2000 0 0
 								11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4130 1100 1 0>;
+				strategy_temp_warm =           <11000 4130 1100 1 0>;
 			};
 			strategy_soc_range_mid_high { /* ui_soc: 76%~85% */
-				strategy_temp_little_cold =	<11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4490 1000 1 0>;
+				strategy_temp_little_cold =    <11000 4150 1000 1 0>;
+				strategy_temp_cool =           <11000 4490 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4490 1000 1 0>;
 				strategy_temp_little_cool_high = <11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4480 1500 0 0
+				strategy_temp_normal_low =     <11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 1500 0 0
+				strategy_temp_normal_high =    <11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4130 1100 1 0>;
+				strategy_temp_warm =           <11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_high { /* ui_soc: 86%~90% */
-				strategy_temp_little_cold =	<11000 4130 1100 1 0>;
-				strategy_temp_cool = <11000 4130 1100 1 0>;
-				strategy_temp_little_cool =	<11000 4130 1100 1 0>;
-				strategy_temp_little_cool_high = <11000 4130 1100 1 0>;
-				strategy_temp_normal_low = <11000 4130 1100 1 0>;
-				strategy_temp_normal_high =	<11000 4130 1100 1 0>;
-				strategy_temp_warm = <11000 4130 1100 1 0>;
+				strategy_temp_little_cold =    <11000 4490 1000 1 0>;
+				strategy_temp_cool =           <11000 4490 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4490 1000 1 0>;
+				strategy_temp_little_cool_high = <11000 4490 1000 1 0>;
+				strategy_temp_normal_low =     <11000 4490 1000 1 0>;
+				strategy_temp_normal_high =    <11000 4470 1000 1 0>;
+				strategy_temp_warm =           <11000 4130 1000 1 0>;
 			};
 		};
 
 		ufcs_charge_oplus_strategy {
 			oplus,temp_type = <OPLUS_STRATEGY_USE_SHELL_TEMP>;
 			oplus,soc_range = <0 20 35 50 75 85 90>;
-			oplus,temp_range = <0 50 120 160 210 350 440 530>;
+			oplus,temp_range = <0 50 120 160 210 350 440 510>;
 
 			strategy_soc_range_min { /* ui_soc: 0%~20% */
-				strategy_temp_little_cold =	<11000 4150 3000 0 0
-								11000 4480 2550 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1850 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4480 3000 0 0
-								11000 4480 2550 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_normal_low =	<11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 3000 0 0
-								11000 4460 2500 0 0
-								11000 4460 2000 0 0
-								11000 4460 1500 0 0
-								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4120 1850 0 0
+				strategy_temp_little_cold =    <11000 4150 1750 0 0
+								11000 4150 1500 0 0
+								11000 4500 1000 1 0>;
+				strategy_temp_cool =           <11000 4150 2950 0 0
+								11000 4150 2500 0 0
+								11000 4150 2000 0 0
+								11000 4490 1750 0 0
+								11000 4490 1500 0 0
+								11000 4500 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4150 4500 0 0
+								11000 4150 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_little_cool_high = <11000 4120 7300 0 30
+								11000 4230 5600 0 0
+								11000 4230 5500 0 0
+								11000 4230 5000 0 0
+								11000 4230 4500 0 0
+								11000 4230 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_low =     <11000 4120 7300 0 30
+								11000 4230 5600 0 0
+								11000 4230 5500 0 0
+								11000 4230 5000 0 0
+								11000 4230 4500 0 0
+								11000 4230 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_high =    <11000 4120 7300 0 30
+								11000 4230 5600 0 0
+								11000 4230 5500 0 0
+								11000 4230 5000 0 0
+								11000 4230 4500 0 0
+								11000 4230 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1250 1 0>;
+				strategy_temp_warm =           <11000 4120 1950 0 0
 								11000 4120 1500 0 0
-								11000 4130 1300 1 0>;
+								11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_low { /* ui_soc: 21%~35% */
-				strategy_temp_little_cold =	<11000 4150 3000 0 0
-								11000 4480 2550 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1850 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4480 3000 0 0
-								11000 4480 2550 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_normal_low =	<11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 3000 0 0
-								11000 4460 2500 0 0
-								11000 4460 2000 0 0
-								11000 4460 1500 0 0
-								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4120 1850 0 0
+				strategy_temp_little_cold =    <11000 4150 1750 0 0
+								11000 4150 1500 0 0
+								11000 4500 1000 1 0>;
+				strategy_temp_cool =           <11000 4150 2950 0 0
+								11000 4150 2500 0 0
+								11000 4150 2000 0 0
+								11000 4490 1750 0 0
+								11000 4490 1500 0 0
+								11000 4500 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4150 4500 0 0
+								11000 4150 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_little_cool_high = <11000 4120 7300 0 30
+								11000 4230 5600 0 0
+								11000 4230 5500 0 0
+								11000 4230 5000 0 0
+								11000 4230 4500 0 0
+								11000 4230 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_low =     <11000 4120 7300 0 30
+								11000 4230 5600 0 0
+								11000 4230 5500 0 0
+								11000 4230 5000 0 0
+								11000 4230 4500 0 0
+								11000 4230 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_high =    <11000 4120 7300 0 30
+								11000 4230 5600 0 0
+								11000 4230 5500 0 0
+								11000 4230 5000 0 0
+								11000 4230 4500 0 0
+								11000 4230 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1250 1 0>;
+				strategy_temp_warm =           <11000 4120 1950 0 0
 								11000 4120 1500 0 0
 								11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_mid_low { /* ui_soc: 36%~55% */
-				strategy_temp_little_cold =	<11000 4480 2000 0 0
-								11000 4480 1850 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_normal_low =	<11000 4480 3000 0 0
-								11000 4480 2500 0 0
-								11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 3000 0 0
-								11000 4460 2500 0 0
-								11000 4460 2000 0 0
-								11000 4460 1500 0 0
-								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4120 1850 0 0
+				strategy_temp_little_cold =    <11000 4150 1750 0 0
+								11000 4150 1500 0 0
+								11000 4500 1000 1 0>;
+				strategy_temp_cool =           <11000 4150 2500 0 0
+								11000 4150 2000 0 0
+								11000 4490 1750 0 0
+								11000 4490 1500 0 0
+								11000 4500 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4150 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_little_cool_high = <11000 4230 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_low =     <11000 4120 6400 0 30
+								11000 4230 5600 0 0
+								11000 4230 5500 0 0
+								11000 4230 5000 0 0
+								11000 4230 4500 0 0
+								11000 4230 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_high =    <11000 4120 6400 0 30
+								11000 4230 5600 0 0
+								11000 4230 5500 0 0
+								11000 4230 5000 0 0
+								11000 4230 4500 0 0
+								11000 4230 4000 0 0
+								11000 4510 3750 0 0
+								11000 4510 3500 0 0
+								11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_warm =           <11000 4120 1950 0 0
 								11000 4120 1500 0 0
 								11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_mid { /* ui_soc: 56%~75% */
-				strategy_temp_little_cold =	<11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4480 2000 0 0
-								11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 2500 0 0
-								11000 4460 2000 0 0
-								11000 4460 1500 0 0
-								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4130 1000 1 0>;
+				strategy_temp_little_cold =    <11000 4150 1500 0 0
+								11000 4500 1000 1 0>;
+				strategy_temp_cool =           <11000 4490 1500 0 0
+								11000 4500 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_little_cool_high = <11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_low =     <11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_high =    <11000 4510 3000 0 0
+								11000 4510 2500 0 0
+								11000 4540 2150 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_warm =           <11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_mid_high { /* ui_soc: 76%~85% */
-				strategy_temp_little_cold =	<11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4480 1500 0 0
-								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 1500 0 0
-								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4130 1000 1 0>;
+				strategy_temp_little_cold =    <11000 4500 1000 1 0>;
+				strategy_temp_cool =           <11000 4500 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_little_cool_high = <11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_low =     <11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_normal_high =    <11000 4510 2500 0 0
+								11000 4540 2130 0 0
+								11000 4540 2000 0 0
+								11000 4540 1500 0 0
+								11000 4550 1000 1 0>;
+				strategy_temp_warm =           <11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_high { /* ui_soc: 86%~90% */
-				strategy_temp_little_cold =	<11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4490 1000 1 0>;
-				strategy_temp_warm = <11000 4130 1000 1 0>;
+				strategy_temp_little_cold =    <11000 4500 1000 1 0>;
+				strategy_temp_cool =           <11000 4500 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4550 1000 1 0>;
+				strategy_temp_little_cool_high = <11000 4550 1000 1 0>;
+				strategy_temp_normal_low =     <11000 4550 1000 1 0>;
+				strategy_temp_normal_high =    <11000 4550 1000 1 0>;
+				strategy_temp_warm =           <11000 4130 1000 1 0>;
 			};
 		};
 
@@ -1355,10 +1461,10 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
  			ufcs_input_impedance: ufcs_input_impedance {
  				node_name = "ufcs_input";
  				default_impedance_mohm = <0>;
- 				default_curr_ma = <4000>;
+				default_curr_ma = <7300>;
  				current_drop_table = <
- 					250 4000
- 					340 3000
+					250 7300
+					340 5000
  					380 2000
  					480 0
  				>;
@@ -1405,7 +1511,7 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 		oplus,impedance_unit {
 			oplus_ufcs_impedance_unit: oplus,ufcs_impedance_unit {
 				uint_name = "ufcs";
-				default_curr_ma = <4000>;
+				default_curr_ma = <7300>;
 				impedance_node = <&ufcs_input_impedance>;
 			};
 		};
@@ -1694,11 +1800,11 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4510 35 0 0 0
 								 4510 30 0 0 0
 								 4510 25 0 0 0
-								 4550 21 0 0 0
-								 4550 20 0 0 0
-								 4550 15 0 0 0
+								 4540 21 0 0 0
+								 4540 20 0 0 0
+								 4540 15 0 0 0
 								 4550 10 1 0 0>;
-				strategy_temp_little_cool_high = <4120 73 0 60 0
+				strategy_temp_little_cool_high = <4120 73 0 30 0
 								 4230 56 0 0 0
 								 4230 55 0 0 0
 								 4230 50 0 0 0
@@ -1712,7 +1818,7 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4540 20 0 0 0
 								 4540 15 0 0 0
 								 4550 10 1 0 0>;
-				strategy_temp_normal_low = <4120 73 0 60 0
+				strategy_temp_normal_low = <4120 73 0 30 0
 								 4230 56 0 0 0
 								 4230 55 0 0 0
 								 4230 50 0 0 0
@@ -1726,7 +1832,7 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4540 20 0 0 0
 								 4540 15 0 0 0
 								 4550 10 1 0 0>;
-				strategy_temp_normal_high =	<4120 73 0 60 0
+				strategy_temp_normal_high =	<4120 73 0 30 0
 								 4230 56 0 0 0
 								 4230 55 0 0 0
 								 4230 50 0 0 0
@@ -1762,11 +1868,11 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4510 30 0 0 0
 								 4510 40 0 0 0
 								 4510 25 0 0 0
-								 4550 21 0 0 0
-								 4550 20 0 0 0
-								 4550 15 0 0 0
+								 4540 21 0 0 0
+								 4540 20 0 0 0
+								 4540 15 0 0 0
 								 4550 10 1 0 0>;
-				strategy_temp_little_cool_high = <4120 73 0 60 0
+				strategy_temp_little_cool_high = <4120 73 0 30 0
 								 4230 56 0 0 0
 								 4230 55 0 0 0
 								 4230 50 0 0 0
@@ -1780,7 +1886,7 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4540 20 0 0 0
 								 4540 15 0 0 0
 								 4550 10 1 0 0>;
-				strategy_temp_normal_low = <4120 73 0 60 0
+				strategy_temp_normal_low = <4120 73 0 30 0
 								 4230 56 0 0 0
 								 4230 55 0 0 0
 								 4230 50 0 0 0
@@ -1794,7 +1900,7 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4540 20 0 0 0
 								 4540 15 0 0 0
 								 4550 10 1 0 0>;
-				strategy_temp_normal_high =	<4120 73 0 60 0
+				strategy_temp_normal_high =	<4120 73 0 30 0
 								 4230 56 0 0 0
 								 4230 55 0 0 0
 								 4230 50 0 0 0
@@ -1827,9 +1933,9 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4510 35 0 0 0
 								 4510 30 0 0 0
 								 4510 25 0 0 0
-								 4550 21 0 0 0
-								 4550 20 0 0 0
-								 4550 15 0 0 0
+								 4540 21 0 0 0
+								 4540 20 0 0 0
+								 4540 15 0 0 0
 								 4550 10 1 0 0>;
 				strategy_temp_little_cool_high = <4230 40 0 0 0
 								 4510 37 0 0 0
@@ -1840,7 +1946,7 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4540 20 0 0 0
 								 4540 15 0 0 0
 								 4550 10 1 0 0>;
-				strategy_temp_normal_low = <4120 64 0 60 0
+				strategy_temp_normal_low = <4120 64 0 30 0
 								 4230 56 0 0 0
 								 4230 55 0 0 0
 								 4230 50 0 0 0
@@ -1854,7 +1960,7 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4540 20 0 0 0
 								 4540 15 0 0 0
 								 4550 10 1 0 0>;
-				strategy_temp_normal_high =	<4120 64 0 60 0
+				strategy_temp_normal_high =	<4120 64 0 30 0
 								 4230 56 0 0 0
 								 4230 55 0 0 0
 								 4230 50 0 0 0
@@ -1878,8 +1984,8 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 								 4500 10 1 0 0>;
 				strategy_temp_cool = <4490 15 0 0 0
 								 4500 10 1 0 0>;
-				strategy_temp_little_cool =	<4550 20 0 0 0
-								 4550 15 0 0 0
+				strategy_temp_little_cool =	<4540 20 0 0 0
+								 4540 15 0 0 0
 								 4550 10 1 0 0>;
 				strategy_temp_little_cool_high = <4510 25 0 0 0
 								 4540 21 0 0 0
@@ -2169,11 +2275,11 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 		oplus,pps_ibat_over_oplus = <11400>;
 		oplus,pps_full_cool_sw_vbat = <4490>;
 		oplus,pps_full_normal_sw_vbat = <4490>;
-		oplus,pps_full_normal_hw_vbat = <4500>;
+		oplus,pps_full_normal_hw_vbat = <4540>;
 		oplus,pps_full_warm_vbat = <4130>;
 		oplus,pps_full_cool_sw_vbat_third = <4490>;
 		oplus,pps_full_normal_sw_vbat_third= <4490>;
-		oplus,pps_full_normal_hw_vbat_third = <4500>;
+		oplus,pps_full_normal_hw_vbat_third = <4540>;
 		oplus,pps_current_change_timeout = <100>;
 		oplus,pps_r_default = <270 45 10 45 20 20 20>;
 		oplus,pps_rmos_mohm = <5>;
@@ -2274,25 +2380,25 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 
 		pps_charge_third_strategy {
 			oplus,temp_type = <OPLUS_STRATEGY_USE_SHELL_TEMP>;
-			oplus,soc_range = <0 20 35 55 75 85 85>;
-			oplus,temp_range = <0 50 120 160 210 350 440 500>;
+			oplus,soc_range = <0 20 35 55 75 85 90>;
+			oplus,temp_range = <0 50 120 160 210 350 440 510>;
 
 			strategy_soc_range_min { /* ui_soc: 0%~20% */
-				strategy_temp_little_cold =	<11000 4140 1750 0 0
+				strategy_temp_little_cold =    <11000 4140 1750 0 0
 								11000 4140 1500 0 0
 								11000 4150 1000 1 0>;
-				strategy_temp_cool = <11000 4150 2950 0 0
+				strategy_temp_cool =           <11000 4150 2950 0 0
 								11000 4150 2500 0 0
 								11000 4150 2000 0 0
 								11000 4480 1750 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4150 4500 0 0
+				strategy_temp_little_cool =    <11000 4150 4500 0 0
 								11000 4150 4000 0 0
-								11000 4480 3750 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
 								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
@@ -2300,21 +2406,21 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 				strategy_temp_little_cool_high = <11000 4230 5000 0 0
 								11000 4230 4500 0 0
 								11000 4230 4000 0 0
-								11000 4480 3750 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
 								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4230 5000 0 0
+				strategy_temp_normal_low =	<11000 4230 5000 0 0
 								11000 4230 4500 0 0
 								11000 4230 4000 0 0
-								11000 4480 3750 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
 								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
@@ -2322,34 +2428,34 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 				strategy_temp_normal_high =	<11000 4230 5000 0 0
 								11000 4230 4500 0 0
 								11000 4230 4000 0 0
-								11000 4460 3750 0 0
-								11000 4460 3500 0 0
-								11000 4460 3000 0 0
-								11000 4460 2500 0 0
+								11000 4450 3750 0 0
+								11000 4450 3500 0 0
+								11000 4450 3000 0 0
+								11000 4450 2500 0 0
 								11000 4460 2150 0 0
 								11000 4460 2000 0 0
 								11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4120 1950 0 0
+				strategy_temp_warm =           <11000 4120 1950 0 0
 								11000 4120 1500 0 0
 								11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_low { /* ui_soc: 21%~35% */
-				strategy_temp_little_cold =	<11000 4140 1750 0 0
+				strategy_temp_little_cold =    <11000 4140 1750 0 0
 								11000 4140 1500 0 0
 								11000 4150 1000 1 0>;
-				strategy_temp_cool = <11000 4150 2950 0 0
+				strategy_temp_cool =           <11000 4150 2950 0 0
 								11000 4150 2500 0 0
 								11000 4150 2000 0 0
 								11000 4480 1750 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4150 4500 0 0
+				strategy_temp_little_cool =    <11000 4150 4500 0 0
 								11000 4150 4000 0 0
-								11000 4480 3750 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
 								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
@@ -2357,37 +2463,37 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 				strategy_temp_little_cool_high = <11000 4230 5000 0 0
 								11000 4230 4500 0 0
 								11000 4230 4000 0 0
-								11000 4480 3750 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
 								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4230 5000 0 0
+				strategy_temp_normal_low =     <11000 4230 5000 0 0
 								11000 4230 4500 0 0
 								11000 4230 4000 0 0
-								11000 4480 3750 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
 								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4230 5000 0 0
+				strategy_temp_normal_high =    <11000 4230 5000 0 0
 								11000 4230 4500 0 0
 								11000 4230 4000 0 0
-								11000 4460 3750 0 0
-								11000 4460 3500 0 0
-								11000 4460 3000 0 0
-								11000 4460 2500 0 0
+								11000 4450 3750 0 0
+								11000 4450 3500 0 0
+								11000 4450 3000 0 0
+								11000 4450 2500 0 0
 								11000 4460 2150 0 0
 								11000 4460 2000 0 0
 								11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4120 1950 0 0
+				strategy_temp_warm =           <11000 4120 1950 0 0
 								11000 4120 1500 0 0
 								11000 4130 1000 1 0>;
 			};
@@ -2395,96 +2501,96 @@ oplus_virtual_ufcs: oplus,virtual_ufcs {
 				strategy_temp_little_cold =	<11000 4140 1750 0 0
 								11000 4140 1500 0 0
 								11000 4150 1000 1 0>;
-				strategy_temp_cool = <11000 4150 2500 0 0
+				strategy_temp_cool =           <11000 4150 2500 0 0
 								11000 4150 2000 0 0
 								11000 4480 1750 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_little_cool =    <11000 4470 3000 0 0
+								11000 4470 2500 0 0
 								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_little_cool_high = <11000 4480 3000 0 0
-								11000 4480 2500 0 0
+				strategy_temp_little_cool_high = <11000 4470 3000 0 0
+								11000 4470 2500 0 0
 								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4230 5000 0 0
+				strategy_temp_normal_low =     <11000 4230 5000 0 0
 								11000 4230 4500 0 0
 								11000 4230 4000 0 0
-								11000 4480 3750 0 0
-								11000 4480 3500 0 0
-								11000 4480 3000 0 0
-								11000 4480 2500 0 0
+								11000 4470 3750 0 0
+								11000 4470 3500 0 0
+								11000 4470 3000 0 0
+								11000 4470 2500 0 0
 								11000 4480 2150 0 0
 								11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4230 5000 0 0
+				strategy_temp_normal_high =    <11000 4230 5000 0 0
 								11000 4230 4500 0 0
 								11000 4230 4000 0 0
-								11000 4460 3750 0 0
-								11000 4460 3500 0 0
-								11000 4460 3000 0 0
-								11000 4460 2500 0 0
+								11000 4450 3750 0 0
+								11000 4450 3500 0 0
+								11000 4450 3000 0 0
+								11000 4450 2500 0 0
 								11000 4460 2150 0 0
 								11000 4460 2000 0 0
 								11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4120 1950 0 0
+				strategy_temp_warm =           <11000 4120 1950 0 0
 								11000 4120 1500 0 0
 								11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_mid { /* ui_soc: 56%~75% */
-				strategy_temp_little_cold =	<11000 4140 1500 0 0
+				strategy_temp_little_cold =    <11000 4140 1500 0 0
 								11000 4150 1000 1 0>;
-				strategy_temp_cool = <11000 4480 1500 0 0
+				strategy_temp_cool =           <11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4480 2000 0 0
+				strategy_temp_little_cool =    <11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
 				strategy_temp_little_cool_high = <11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4480 2000 0 0
+				strategy_temp_normal_low =     <11000 4480 2000 0 0
 								11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 2500 0 0
+				strategy_temp_normal_high =    <11000 4450 2500 0 0
 								11000 4460 2150 0 0
 								11000 4460 2000 0 0
 								11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4130 1000 1 0>;
+				strategy_temp_warm =           <11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_mid_high { /* ui_soc: 76%~85% */
-				strategy_temp_little_cold =	<11000 4150 1000 1 0>;
-				strategy_temp_cool = <11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4490 1000 1 0>;
+				strategy_temp_little_cold =    <11000 4150 1000 1 0>;
+				strategy_temp_cool =           <11000 4490 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4490 1000 1 0>;
 				strategy_temp_little_cool_high = <11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4480 1500 0 0
+				strategy_temp_normal_low =     <11000 4480 1500 0 0
 								11000 4490 1000 1 0>;
-				strategy_temp_normal_high =	<11000 4460 1500 0 0
+				strategy_temp_normal_high =    <11000 4460 1500 0 0
 								11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4130 1000 1 0>;
+				strategy_temp_warm =           <11000 4130 1000 1 0>;
 			};
 			strategy_soc_range_high { /* ui_soc: 86%~90% */
-				strategy_temp_little_cold =	<11000 4490 1000 1 0>;
-				strategy_temp_cool = <11000 4490 1000 1 0>;
-				strategy_temp_little_cool =	<11000 4490 1000 1 0>;
+				strategy_temp_little_cold =    <11000 4490 1000 1 0>;
+				strategy_temp_cool =           <11000 4490 1000 1 0>;
+				strategy_temp_little_cool =    <11000 4490 1000 1 0>;
 				strategy_temp_little_cool_high = <11000 4490 1000 1 0>;
-				strategy_temp_normal_low = <11000 4490 1000 1 0>;
+				strategy_temp_normal_low =     <11000 4490 1000 1 0>;
 				strategy_temp_normal_high =	<11000 4470 1000 1 0>;
-				strategy_temp_warm = <11000 4130 1000 1 0>;
+				strategy_temp_warm =            <11000 4130 1000 1 0>;
 			};
 		};
 
 		pps_charge_oplus_strategy {
 			oplus,temp_type = <OPLUS_STRATEGY_USE_SHELL_TEMP>;
 			oplus,soc_range = <0 20 35 50 75 85 90>;
-			oplus,temp_range = <0 50 120 160 210 350 440 530>;
+			oplus,temp_range = <0 50 120 160 210 350 440 510>;
 
 			strategy_soc_range_min {
 				strategy_temp_little_cold =	<11000 4150 2750 0 0

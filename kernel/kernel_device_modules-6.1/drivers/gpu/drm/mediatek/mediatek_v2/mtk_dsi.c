@@ -11062,6 +11062,7 @@ static void mtk_dsi_cmd_timing_change(struct mtk_dsi *dsi,
 {
 	struct cmdq_pkt *cmdq_handle = NULL;
 	struct cmdq_pkt *cmdq_handle2 = NULL;
+	struct cmdq_pkt *cmdq_handle3 = NULL;
 	struct mtk_crtc_state *state =
 	    to_mtk_crtc_state(mtk_crtc->base.state);
 	struct mtk_crtc_state *old_mtk_state =
@@ -11274,7 +11275,19 @@ skip_change_mipi:
 	/*  send lcm cmd after DSI power on if needed */
 	if (dsi->ext && dsi->ext->funcs && dsi->ext->funcs->mode_switch_hs) {
 		dsi->ext->funcs->mode_switch_hs(dsi->panel,
-		&dsi->conn, dsi, src_mode, dst_mode, AFTER_DSI_POWERON, mtk_dsi_cmdq_pack_gce);
+			&dsi->conn, dsi, src_mode, dst_mode, AFTER_DSI_POWERON, mtk_dsi_cmdq_pack_gce);
+		if (mtk_crtc->panel_ext->params->oplus_mipi_switch_waite_frame) {
+			mtk_crtc_pkt_create(&cmdq_handle3, &mtk_crtc->base,
+			mtk_crtc->gce_obj.client[CLIENT_CFG]);
+			cmdq_pkt_clear_event(cmdq_handle3,
+							mtk_crtc->gce_obj.event[EVENT_TE]);
+			if (mtk_drm_lcm_is_connect(mtk_crtc))
+					cmdq_pkt_wfe(cmdq_handle3,
+							mtk_crtc->gce_obj.event[EVENT_TE]);
+			cmdq_pkt_flush(cmdq_handle3);
+			cmdq_pkt_destroy(cmdq_handle3);
+		}
+
 	} else if (dsi->ext && dsi->ext->funcs &&
 		dsi->ext->funcs->mode_switch) {
 		check_ms_work = dsi->ext->funcs->mode_switch(dsi->panel, &dsi->conn,
@@ -11315,6 +11328,13 @@ skip_change_mipi:
 		mtk_crtc_pkt_create(&cmdq_handle2, &mtk_crtc->base,
 			mtk_crtc->gce_obj.client[CLIENT_CFG]);
 		mtk_dsi_poll_for_idle(dsi, cmdq_handle2);
+		if (mtk_crtc->panel_ext->params->oplus_mipi_switch_waite_frame) {
+			cmdq_pkt_clear_event(cmdq_handle2,
+							mtk_crtc->gce_obj.event[EVENT_TE]);
+			if (mtk_drm_lcm_is_connect(mtk_crtc))
+					cmdq_pkt_wfe(cmdq_handle2,
+							mtk_crtc->gce_obj.event[EVENT_TE]);
+		}
 		cmdq_pkt_set_event(cmdq_handle2,
 			mtk_crtc->gce_obj.event[EVENT_CABC_EOF]);
 		cmdq_pkt_set_event(cmdq_handle2,

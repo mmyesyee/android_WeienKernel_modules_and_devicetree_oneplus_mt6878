@@ -707,6 +707,7 @@ int panel_serial_number_read(struct drm_crtc *crtc, char cmd, int num)
 		|| !strcmp(panel_name, "ac164_p_7_a0001_cmd_panel")
 		|| !strcmp(panel_name, "ac164_p_3_a0001_cmd_panel")
 		|| !strcmp(panel_name, "ae174_p_1_a0037_cmd_panel")
+		|| !strcmp(panel_name, "ae175_p_1_a0037_cmd_panel")
 		|| !strcmp(panel_name, "ac158_p_7_a0001_cmd_panel")) {
 			panel_serial_info.reg_index = 0;
 			panel_serial_info.year      = ((para[panel_serial_info.reg_index] & 0xF0) >> 4) + 10;

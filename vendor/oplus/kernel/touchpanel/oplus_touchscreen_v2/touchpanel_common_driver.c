@@ -2356,6 +2356,7 @@ static int init_parse_dts(struct device *dev, struct touchpanel_data *ts)
 	ts->esd_handle_support      = of_property_read_bool(np, "esd_handle_support");
 	ts->fw_edge_limit_support   = of_property_read_bool(np,
 				      "fw_edge_limit_support");
+	ts->report_rate_v2_support      = of_property_read_bool(np, "report_rate_v2_support");
 	ts->charger_pump_support    = of_property_read_bool(np, "charger_pump_support");
 	ts->wireless_charger_support = of_property_read_bool(np,
 				       "wireless_charger_support");

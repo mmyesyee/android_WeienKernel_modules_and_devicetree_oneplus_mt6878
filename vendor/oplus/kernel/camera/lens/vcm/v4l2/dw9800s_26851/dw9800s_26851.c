@@ -92,6 +92,7 @@ static int dw9800s_goto_last_pos(struct dw9800s_device *dw9800s)
 
 	diff_dac = g_last_pos - DW9800S_ORIGIN_FOCUS_POS;
 	if (diff_dac == 0) {
+		dw9800s->focus->val = g_last_pos;
 		return 0;
 	}
 	nStep_count = (diff_dac < 0 ? (diff_dac*(-1)) : diff_dac) /

@@ -75473,19 +75473,19 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION
 	}
 	,
 	{	{'C', 'N'}
-		, 10, {60, 60, 60, 60, 60, 60, 60, 60, 60}
+		, 10, {60, 60, 60, 24, 24, 60, 60, 60, 60}
 	}
 	,
 	{	{'C', 'N'}
-		, 11, {60, 60, 60, 24, 24, 60, 60, 60, 60}
+		, 11, {60, 30, 30, 22, 22, 60, 60, 60, 60}
 	}
 	,
 	{	{'C', 'N'}
-		, 12, {60, 28, 28, 60, 60, 60, 60, 60, 60}
+		, 12, {34, 28, 28, 60, 60, 60, 60, 60, 60}
 	}
 	,
 	{	{'C', 'N'}
-		, 13, {32, 22, 22, 60, 60, 60, 60, 60, 60}
+		, 13, {30, 20, 20, 60, 60, 60, 60, 60, 60}
 	}
 	,
 	{	{'C', 'N'}
@@ -75501,7 +75501,7 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION
 	}
 	,
 	{	{'C', 'N'}
-		, 155, {60, 60, 60, 60, 60, 60, 60, 60, 60}
+		, 155, {60, 60, 60, 60, 60, 29, 29, 60, 60}
 	}
 };
 
@@ -75540,7 +75540,7 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION_HE
 			64, 64, 64,  /* RU52 L,H,U*/
 			64, 64, 64,  /* RU106 L,H,U*/
 			64, 64, 64,  /* RU242 L,H,U*/
-			64, 64, 64,  /* RU484 L,H,U*/
+			30, 30, 30,  /* RU484 L,H,U*/
 			64, 64, 64}  /* RU996 L,H,U*/
 	},
 	{	{'C', 'N'}
@@ -75549,7 +75549,7 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION_HE
 			64, 64, 64,  /* RU52 L,H,U*/
 			64, 64, 64,  /* RU106 L,H,U*/
 			64, 64, 64,  /* RU242 L,H,U*/
-			64, 64, 64,  /* RU484 L,H,U*/
+			30, 30, 30,  /* RU484 L,H,U*/
 			64, 64, 64}  /* RU996 L,H,U*/
 	},
 	{	{'C', 'N'}
@@ -75558,7 +75558,7 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION_HE
 			64, 64, 64,  /* RU52 L,H,U*/
 			64, 64, 64,  /* RU106 L,H,U*/
 			64, 64, 64,  /* RU242 L,H,U*/
-			64, 64, 64,  /* RU484 L,H,U*/
+			30, 30, 30,  /* RU484 L,H,U*/
 			64, 64, 64}  /* RU996 L,H,U*/
 	},
 	{	{'C', 'N'}
@@ -75567,7 +75567,7 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION_HE
 			64, 64, 64,  /* RU52 L,H,U*/
 			64, 64, 64,  /* RU106 L,H,U*/
 			64, 64, 64,  /* RU242 L,H,U*/
-			64, 64, 64,  /* RU484 L,H,U*/
+			29, 29, 29,  /* RU484 L,H,U*/
 			64, 64, 64}  /* RU996 L,H,U*/
 	},
 	{	{'C', 'N'}
@@ -75575,8 +75575,8 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION_HE
 			{64, 64, 64, /* RU26 L,H,U */
 			64, 64, 64,  /* RU52 L,H,U*/
 			64, 64, 64,  /* RU106 L,H,U*/
-			64, 64, 64,  /* RU242 L,H,U*/
-			64, 64, 64,  /* RU484 L,H,U*/
+			32, 32, 32,  /* RU242 L,H,U*/
+			24, 24, 24,  /* RU484 L,H,U*/
 			64, 64, 64}  /* RU996 L,H,U*/
 	},
 	{	{'C', 'N'}
@@ -75585,7 +75585,7 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION_HE
 			64, 64, 64,  /* RU52 L,H,U*/
 			64, 64, 64,  /* RU106 L,H,U*/
 			30, 30, 30,  /* RU242 L,H,U*/
-			28, 28, 28,  /* RU484 L,H,U*/
+			24, 24, 24,  /* RU484 L,H,U*/
 			64, 64, 64}  /* RU996 L,H,U*/
 	},
 	{	{'C', 'N'}
@@ -75602,7 +75602,7 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION_HE
 			{64, 64, 64, /* RU26 L,H,U */
 			64, 64, 64,  /* RU52 L,H,U*/
 			64, 64, 64,  /* RU106 L,H,U*/
-			22, 22, 22,  /* RU242 L,H,U*/
+			20, 20, 20,  /* RU242 L,H,U*/
 			64, 64, 64,  /* RU484 L,H,U*/
 			64, 64, 64}  /* RU996 L,H,U*/
 	},
@@ -75621,7 +75621,7 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION_HE
 			64, 64, 64,  /* RU52 L,H,U*/
 			64, 64, 64,  /* RU106 L,H,U*/
 			64, 64, 64,  /* RU242 L,H,U*/
-			64, 64, 64,  /* RU484 L,H,U*/
+			32, 32, 32,  /* RU484 L,H,U*/
 			64, 64, 64}  /* RU996 L,H,U*/
 	},
 	{	{'C', 'N'}
@@ -75640,7 +75640,7 @@ struct COUNTRY_POWER_LIMIT_TABLE_CONFIGURATION_HE
 			64, 64, 64,  /* RU106 L,H,U*/
 			64, 64, 64,  /* RU242 L,H,U*/
 			64, 64, 64,  /* RU484 L,H,U*/
-			64, 64, 64}  /* RU996 L,H,U*/
+			28, 28, 28}  /* RU996 L,H,U*/
 	}
 };
 

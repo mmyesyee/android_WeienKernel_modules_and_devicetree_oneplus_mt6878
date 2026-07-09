@@ -59,6 +59,7 @@ struct lcm {
 
 extern unsigned int last_backlight;
 extern unsigned int oplus_display_brightness;
+extern int oplus_serial_number_probe(struct device *dev);
 extern unsigned int oplus_max_normal_brightness;
 extern int oplus_display_panel_dbv_probe(struct device *dev);
 extern void lcdinfo_notify(unsigned long val, void *v);
@@ -69,7 +70,7 @@ extern char regs3[AC178_GAMMA_COMPENSATION_READ_LENGTH];
 extern char regs4[AE174_ELVSS_READ_LENGTH];
 extern unsigned int m_db;
 
-#define MAX_NORMAL_BRIGHTNESS   3580
+#define MAX_NORMAL_BRIGHTNESS   3251
 #define BRIGHTNESS_MAX          3875
 #define LCM_BRIGHTNESS_TYPE 2
 
@@ -152,11 +153,11 @@ static enum PANEL_ES inline get_panel_es_ver(void)
     case 5:
             panel_es_ver = ES_PVT;
             break;
-    case 6:
+    case 7:
             panel_es_ver = ES_PVT2;
             break;
         default:
-            panel_es_ver = ES_DVT;
+            panel_es_ver = ES_PVT2;
     }
     return panel_es_ver;
 }
@@ -572,7 +573,7 @@ static struct mtk_panel_params ext_params_60Hz = {
         .cust_esd_check = 1,
         .esd_check_enable = 1,
         .lcm_esd_check_table[0] = {
-                .cmd = 0x0A, .count = 1, .para_list[0] = 0x9C, .mask_list[0] = 0x9C,
+                .cmd = 0x0A, .count = 1, .para_list[0] = 0x9C,
         },
 
         .vendor = "A0037",
@@ -651,7 +652,7 @@ static struct mtk_panel_params ext_params_60Hz = {
 		.oplus_ofp_aod_off_insert_black = 1,
 		.oplus_ofp_aod_off_black_frame_total_time = 42,
 #endif /* OPLUS_FEATURE_DISPLAY_ONSCREENFINGERPRINT */
-
+        .oplus_mipi_switch_waite_frame = 1,
         .dyn_fps = {
                 .switch_en = 1,
                 .vact_timing_fps = 60,
@@ -676,7 +677,7 @@ static struct mtk_panel_params ext_params_90Hz = {
         .cust_esd_check = 1,
         .esd_check_enable = 1,
         .lcm_esd_check_table[0] = {
-                .cmd = 0x0A, .count = 1, .para_list[0] = 0x9C, .mask_list[0] = 0x9C,
+                .cmd = 0x0A, .count = 1, .para_list[0] = 0x9C,
         },
 
         .vendor = "A0037",
@@ -755,7 +756,7 @@ static struct mtk_panel_params ext_params_90Hz = {
 		.oplus_ofp_aod_off_insert_black = 1,
 		.oplus_ofp_aod_off_black_frame_total_time = 42,
 #endif /* OPLUS_FEATURE_DISPLAY_ONSCREENFINGERPRINT */
-
+        .oplus_mipi_switch_waite_frame = 1,
         .dyn_fps = {
                 .switch_en = 1,
                 .vact_timing_fps = 90,
@@ -780,7 +781,7 @@ static struct mtk_panel_params ext_params_120Hz = {
         .cust_esd_check = 1,
         .esd_check_enable = 1,
         .lcm_esd_check_table[0] = {
-                .cmd = 0x0A, .count = 1, .para_list[0] = 0x9C, .mask_list[0] = 0x9C,
+                .cmd = 0x0A, .count = 1, .para_list[0] = 0x9C,
         },
 
         .vendor = "A0037",
@@ -859,7 +860,7 @@ static struct mtk_panel_params ext_params_120Hz = {
 		.oplus_ofp_aod_off_insert_black = 1,
 		.oplus_ofp_aod_off_black_frame_total_time = 42,
 #endif /* OPLUS_FEATURE_DISPLAY_ONSCREENFINGERPRINT */
-
+        .oplus_mipi_switch_waite_frame = 1,
         .dyn_fps = {
                 .switch_en = 1,
                 .vact_timing_fps = 120,
@@ -884,7 +885,7 @@ static struct mtk_panel_params ext_params_144Hz = {
         .cust_esd_check = 1,
         .esd_check_enable = 1,
         .lcm_esd_check_table[0] = {
-                .cmd = 0x0A, .count = 1, .para_list[0] = 0x9C, .mask_list[0] = 0x9C,
+                .cmd = 0x0A, .count = 1, .para_list[0] = 0x9C,
         },
 
         .vendor = "A0037",
@@ -963,7 +964,7 @@ static struct mtk_panel_params ext_params_144Hz = {
 		.oplus_ofp_aod_off_insert_black = 1,
 		.oplus_ofp_aod_off_black_frame_total_time = 42,
 #endif /* OPLUS_FEATURE_DISPLAY_ONSCREENFINGERPRINT */
-
+        .oplus_mipi_switch_waite_frame = 1,
         .dyn_fps = {
                 .switch_en = 1,
                 .vact_timing_fps = 144,
@@ -1874,6 +1875,7 @@ static void oplus_enhance_mipi_strength_set(struct device *dev)
 static void oplus_lcm_probe(struct device *dev)
 {
     oplus_display_panel_dbv_probe(dev);
+    oplus_serial_number_probe(dev);
     register_device_proc("lcd", "A0037", "P_1");
     oplus_max_normal_brightness = MAX_NORMAL_BRIGHTNESS;
 /* #ifdef OPLUS_FEATURE_ONSCREENFINGERPRINT */

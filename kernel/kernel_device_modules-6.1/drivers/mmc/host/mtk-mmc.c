@@ -1979,7 +1979,7 @@ static void msdc_init_hw(struct msdc_host *host)
 	/* default write data / busy timeout */
 	sdr_set_field(host->base + SDC_CFG, SDC_CFG_WRDTOC, 100);
 
-	
+
 	host->def_tune_para.iocon = readl(host->base + MSDC_IOCON);
 	host->saved_tune_para.iocon = readl(host->base + MSDC_IOCON);
 	if (host->top_base) {

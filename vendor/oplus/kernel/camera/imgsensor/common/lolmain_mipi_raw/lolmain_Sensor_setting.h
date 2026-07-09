@@ -1223,6 +1223,7 @@ static kal_uint16 lolmain_init_setting[] = {
     0x5253, 0x00,
     0x5553, 0x00,
     0x0100, 0x00,
+    0x481f, 0x30,
 };
 
 static kal_uint16 lolmain_preview_setting[] = {
