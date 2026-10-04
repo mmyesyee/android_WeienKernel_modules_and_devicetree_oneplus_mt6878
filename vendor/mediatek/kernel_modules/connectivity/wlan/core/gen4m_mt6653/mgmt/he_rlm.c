@@ -201,7 +201,7 @@ static uint8_t heRlmGetHeSupportedMcs(
 	case BAND_2G4:
 		return  prAdapter->rWifiVar.ucHeMaxMcsMap2g;
 	case BAND_5G:
-		return prAdapter->rWifiVar.ucHeMaxMcsMap5g;
+		return prAdapter->HE_CAP_INFO_MCS_MAP_MCS11;
 #if (CFG_SUPPORT_WIFI_6G == 1)
 	case BAND_6G:
 		return  prAdapter->rWifiVar.ucHeMaxMcsMap6g;
