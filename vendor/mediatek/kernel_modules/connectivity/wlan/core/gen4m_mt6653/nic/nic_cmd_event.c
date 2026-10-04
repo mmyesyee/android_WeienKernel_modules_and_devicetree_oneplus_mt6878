@@ -2929,9 +2929,7 @@ uint32_t nicCfgChipCapLimited(struct ADAPTER *prAdapter,
 			prCapLimited->ucLimitedMaxMcsMap2g,
 			prAdapter->rWifiVar.ucHeMaxMcsMap2g);
 
-	prAdapter->rWifiVar.ucHeMaxMcsMap5g = kal_min_t(uint8_t,
-			prCapLimited->ucLimitedMaxMcsMap5g,
-			prAdapter->rWifiVar.ucHeMaxMcsMap5g);
+	prAdapter->rWifiVar.ucHeMaxMcsMap5g = HE_CAP_INFO_MCS_MAP_MCS11;
 
 	prAdapter->rWifiVar.ucHeMaxMcsMap6g = kal_min_t(uint8_t,
 			prCapLimited->ucLimitedMaxMcsMap6g,
